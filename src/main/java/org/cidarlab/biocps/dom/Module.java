@@ -7,7 +7,9 @@ package org.cidarlab.biocps.dom;
 
 import hyness.stl.grammar.flat.STLflat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,7 +30,7 @@ public class Module {
     
     @Getter
     @Setter
-    private List<String> outputs;
+    private List<Signal> outputs;
     
     @Getter
     @Setter
@@ -50,7 +52,7 @@ public class Module {
         name = _name;
         op = Operation.nop;
         inputs = new ArrayList<Signal>();
-        outputs = new ArrayList<String>();
+        outputs = new ArrayList<Signal>();
     }
     
     public Module(String _name, Operation _op, Module _left, Module _right){
@@ -66,6 +68,28 @@ public class Module {
     
     public int getOutputCount(){
         return this.outputs.size();
+    }
+    
+    public static String operationString(Operation _op){
+        switch(_op){
+            case compose:
+                return "*";
+            case parallel:
+                return "#";
+            default: 
+                return "";
+        }
+    }
+    
+    public Set<String> getModuleNames(){
+        Set<String> names = new HashSet<String>();
+        if(op.equals(Operation.nop)){
+            names.add(name);
+        } else {
+            names.addAll(this.left.getModuleNames());
+            names.addAll(this.right.getModuleNames());
+        }
+        return names;
     }
     
     @Override
