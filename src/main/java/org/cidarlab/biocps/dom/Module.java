@@ -9,6 +9,7 @@ import hyness.stl.grammar.flat.STLflat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -60,6 +61,25 @@ public class Module {
         op = _op;
         left = _left;
         right = _right;
+        inputs = new ArrayList<Signal>();
+        outputs = new ArrayList<Signal>();
+    }
+    
+    @Override
+    public boolean equals(Object m){
+        
+        if(!(m instanceof Module)){
+            return false;
+        }
+        Module module = (Module)m;
+        return module.getName().equals(this.name);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 59 * hash + Objects.hashCode(this.name);
+        return hash;
     }
     
     public int getInputCount(){
@@ -90,6 +110,17 @@ public class Module {
             names.addAll(this.right.getModuleNames());
         }
         return names;
+    }
+    
+    public boolean canCombine(Module m){
+        
+        for(String mModule:m.getModuleNames()){
+            if(this.getModuleNames().contains(mModule)){
+                return false;
+            }
+        }
+        
+        return true;
     }
     
     @Override

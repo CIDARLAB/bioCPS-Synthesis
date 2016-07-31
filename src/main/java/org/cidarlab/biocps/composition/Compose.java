@@ -17,6 +17,14 @@ import org.cidarlab.biocps.dom.Operation;
  */
 public class Compose {
     
+    public static boolean canConcatenate(Module m1, Module m2){
+        
+        if(m1.getOutputCount() != m2.getInputCount()){
+            return false;
+        }
+        
+        return true;
+    }
     
     public static Module concatenation(Module m1, Module m2){
         String concatenatedModuleName = m1.getName() + Module.operationString(Operation.compose) + m2.getName();

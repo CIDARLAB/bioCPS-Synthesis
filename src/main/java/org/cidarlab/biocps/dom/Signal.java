@@ -23,6 +23,25 @@ public class Signal {
     @Setter
     private SignalType type;
     
+    
+    public Signal(){
+        
+    }
+    
+    public Signal(String _name){
+        name = _name;
+    }
+    
+    public Signal(String _name, SignalType _type){
+        name = _name;
+        type = _type;
+    }
+    
+    @Override
+    public String toString(){
+        return this.name;
+    }
+    
     public enum SignalType{
         input,
         output,
