@@ -6,8 +6,10 @@
 package org.cidarlab.biocps.synthesis;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.cidarlab.biocps.composition.Compose;
 import org.cidarlab.biocps.dom.Module;
@@ -18,43 +20,47 @@ import org.cidarlab.biocps.dom.Module;
  */
 public class Synthesis {
     
-    public static void synthesize(Set<Module> candidates){
+    public static void synthesize(Map<Integer,Module> candidates){
         
-        Set<Module> newCandidates = new HashSet<Module>();
-        for(Module firstModule:candidates){
-            for(Module secondModule : candidates){
+        Map<Integer,Module> newCandidates = new HashMap<Integer,Module>();
+        for(Module firstModule:candidates.values()){
+            for(Module secondModule : candidates.values()){
                 if(firstModule.canCombine(secondModule)){
                     
                     
                     //Concatenation
                     if(Compose.canConcatenate(firstModule, secondModule)){
                         Module concatenatedModule = Compose.concatenation(firstModule, secondModule);
-                        if(!candidates.contains(concatenatedModule)){
+                        if(!candidates.containsKey(concatenatedModule.hashCode())){
 //                            System.out.println("====== Concatenation ======");
 //                            System.out.println("First Module  :: " + firstModule);
 //                            System.out.println(firstModule.getModuleNames());
 //                            System.out.println("Second Module :: " + secondModule);
 //                            System.out.println(secondModule.getModuleNames());
-                            newCandidates.add(concatenatedModule);
+                            if(!newCandidates.containsKey(concatenatedModule.hashCode())){
+                                newCandidates.put(concatenatedModule.hashCode(),concatenatedModule);
+                            }
                         }
                     }
                     
                     //Parallel
                     Module parallelModule = Compose.parallel(firstModule, secondModule);
-                    if(!candidates.contains(parallelModule)){
+                    if(!candidates.containsKey(parallelModule.hashCode())){
 //                        System.out.println("====== Parallel ======");
 //                        System.out.println("First Module  :: " + firstModule);
 //                        System.out.println(firstModule.getModuleNames());
 //                        System.out.println("Second Module :: " + secondModule);
 //                        System.out.println(secondModule.getModuleNames());
-                        newCandidates.add(parallelModule);
+                        if(!newCandidates.containsKey(parallelModule.hashCode())){
+                            newCandidates.put(parallelModule.hashCode(),parallelModule);
+                        }
                     }
                 }
             }
         }
         
         if(!newCandidates.isEmpty()){
-            candidates.addAll(newCandidates);
+            candidates.putAll(newCandidates);
             synthesize(candidates);
         } 
         

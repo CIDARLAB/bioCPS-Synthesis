@@ -8,7 +8,9 @@ package org.cidarlab.biocps.synthesis;
 import hyness.stl.LinearPredicateLeaf;
 import hyness.stl.RelOperation;
 import hyness.stl.grammar.flat.STLflat;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -81,7 +83,7 @@ public class SynthesisTest extends TestCase {
         library.add(m1);
         library.add(m2);
         library.add(m3);
-        library.add(m4);
+        //library.add(m4);
         
         
         return library;
@@ -91,9 +93,14 @@ public class SynthesisTest extends TestCase {
     public void testSynthesis(){
         
         System.out.println("Synthesis Test :: ");
-        Set<Module> circuits = new HashSet<Module>(SynthesisTest.createLibrary());
+        Map<Integer,Module> circuits = new HashMap<>();
+        for(Module module:SynthesisTest.createLibrary()){
+            circuits.put(module.hashCode(), module);
+        }
         Synthesis.synthesize(circuits);
-        for(Module circuit:circuits){
+        
+        
+        for(Module circuit:circuits.values()){
             System.out.println(circuit);
         }
         

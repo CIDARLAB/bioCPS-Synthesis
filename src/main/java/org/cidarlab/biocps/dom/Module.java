@@ -71,16 +71,85 @@ public class Module {
         if(!(m instanceof Module)){
             return false;
         }
+        
         Module module = (Module)m;
-        return module.getName().equals(this.name);
+        
+        if(module.getName().equals(this.name)){
+            return true;
+        }
+        
+        if(module.op.equals(Operation.parallel) && this.op.equals(Operation.parallel)){
+            if(module.left.name.equals(this.right.name) && module.right.name.equals(this.left.name)){
+                return true;
+            }
+        }
+        
+        return false;
+        //return module.getName().equals(this.name);
     }
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 59 * hash + Objects.hashCode(this.name);
+        int hash = 7;
+        
+        if(this.op.equals(Operation.nop)){
+            hash = 67 * hash + Objects.hashCode(this.name);
+        }
+        
+        if(this.op.equals(Operation.compose)){
+            hash = 67 * hash + Objects.hashCode(this.toString());
+        }
+        
+        if(this.op.equals(Operation.parallel)){
+            String concatName = "";
+            //concatName += this.getParallelModules();
+            for(String moduleName : this.getParallelModules()){
+                concatName += moduleName;
+            }
+            concatName += Operation.parallel.toString();
+            hash = 67 * hash + Objects.hashCode(concatName);
+        }
         return hash;
     }
+    
+    public Set<String> getParallelModules(){
+        if(this.op.equals(Operation.nop)){
+            Set<String> moduleNameSet = new HashSet<String>();
+            moduleNameSet.add(this.name);
+            return moduleNameSet;
+        }
+        if(this.op.equals(Operation.compose)){
+            Set<String> moduleNameSet = new HashSet<String>();
+            moduleNameSet.add(this.toString());
+            return moduleNameSet;
+        }
+        if(this.op.equals(Operation.parallel)){
+            Set<String> moduleNameSet = new HashSet<String>();
+            moduleNameSet.addAll(this.left.getParallelModules());
+            moduleNameSet.addAll(this.right.getParallelModules());
+            return moduleNameSet;
+        }
+        
+        return null;
+    }
+    
+    
+//    @Override
+//    public int hashCode() {
+//        int hash = 3;
+//        hash = 53 * hash + Objects.hashCode(this.name);
+//        hash = 53 * hash + Objects.hashCode(this.op);
+//        hash = 53 * hash + Objects.hashCode(this.left);
+//        hash = 53 * hash + Objects.hashCode(this.right);
+//        return hash;
+//    }
+
+//    @Override
+//    public int hashCode() {
+//        int hash = 5;
+//        hash = 59 * hash + Objects.hashCode(this.name);
+//        return hash;
+//    }
     
     public int getInputCount(){
         return this.inputs.size();
@@ -124,12 +193,12 @@ public class Module {
     }
     
     @Override
-    public String toString(){
+    public String toString(){        
         if(op.equals(Operation.nop)){
             return this.name;
         }
         else {
-            return ("(" + this.left.toString() + this.op.toString() + this.right.toString() + ")");
+            return ("(" + this.left.toString() + Module.operationString(this.op) + this.right.toString() + ")");
         }
     }
 }
