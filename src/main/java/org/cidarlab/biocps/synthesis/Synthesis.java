@@ -19,38 +19,34 @@ import org.cidarlab.biocps.dom.Module;
  * @author prash
  */
 public class Synthesis {
+
+    public static Set<Module> synthesize(Set<Module> candidates){
+        Map<Integer,Module> circuits = new HashMap<>();
+        for(Module module:candidates){
+            circuits.put(module.hashCode(), module);
+        }
+        synthesize(circuits);
+        return new HashSet<>(circuits.values());
+    }
     
-    public static void synthesize(Map<Integer,Module> candidates){
+    private static void synthesize(Map<Integer,Module> candidates){
         
         Map<Integer,Module> newCandidates = new HashMap<Integer,Module>();
         for(Module firstModule:candidates.values()){
             for(Module secondModule : candidates.values()){
                 if(firstModule.canCombine(secondModule)){
-                    
-                    
                     //Concatenation
                     if(Compose.canConcatenate(firstModule, secondModule)){
                         Module concatenatedModule = Compose.concatenation(firstModule, secondModule);
                         if(!candidates.containsKey(concatenatedModule.hashCode())){
-//                            System.out.println("====== Concatenation ======");
-//                            System.out.println("First Module  :: " + firstModule);
-//                            System.out.println(firstModule.getModuleNames());
-//                            System.out.println("Second Module :: " + secondModule);
-//                            System.out.println(secondModule.getModuleNames());
                             if(!newCandidates.containsKey(concatenatedModule.hashCode())){
                                 newCandidates.put(concatenatedModule.hashCode(),concatenatedModule);
                             }
                         }
                     }
-                    
                     //Parallel
                     Module parallelModule = Compose.parallel(firstModule, secondModule);
                     if(!candidates.containsKey(parallelModule.hashCode())){
-//                        System.out.println("====== Parallel ======");
-//                        System.out.println("First Module  :: " + firstModule);
-//                        System.out.println(firstModule.getModuleNames());
-//                        System.out.println("Second Module :: " + secondModule);
-//                        System.out.println(secondModule.getModuleNames());
                         if(!newCandidates.containsKey(parallelModule.hashCode())){
                             newCandidates.put(parallelModule.hashCode(),parallelModule);
                         }
@@ -58,13 +54,10 @@ public class Synthesis {
                 }
             }
         }
-        
         if(!newCandidates.isEmpty()){
             candidates.putAll(newCandidates);
             synthesize(candidates);
         } 
-        
-        
     }
 
     

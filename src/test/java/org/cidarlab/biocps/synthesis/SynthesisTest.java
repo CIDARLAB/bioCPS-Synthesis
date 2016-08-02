@@ -83,7 +83,7 @@ public class SynthesisTest extends TestCase {
         library.add(m1);
         library.add(m2);
         library.add(m3);
-        //library.add(m4);
+        library.add(m4);
         
         
         return library;
@@ -93,16 +93,15 @@ public class SynthesisTest extends TestCase {
     public void testSynthesis(){
         
         System.out.println("Synthesis Test :: ");
-        Map<Integer,Module> circuits = new HashMap<>();
-        for(Module module:SynthesisTest.createLibrary()){
-            circuits.put(module.hashCode(), module);
-        }
-        Synthesis.synthesize(circuits);
+        Set<Module> candidates = new HashSet<Module>(SynthesisTest.createLibrary());
+        candidates = Synthesis.synthesize(candidates);
         
         
-        for(Module circuit:circuits.values()){
+        for(Module circuit:candidates){
             System.out.println(circuit);
         }
+        
+        System.out.println("Total Number of circuits :: " + candidates.size());
         
     }
     
